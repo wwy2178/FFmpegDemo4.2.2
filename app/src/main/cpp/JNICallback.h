@@ -1,0 +1,10 @@
+//
+// Created by cat on 2020/6/11.
+//
+
+#ifndef FFMPEGDEMO1_JNICALLBACK_H
+#define FFMPEGDEMO1_JNICALLBACK_H
+
+
+
+#endif //FFMPEGDEMO1_JNICALLBACK_H
