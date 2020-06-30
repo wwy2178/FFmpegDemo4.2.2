@@ -11,8 +11,9 @@ add_library(
 
 #找到系统中 NDK log库
 find_library(
-        log-lib
-        log )
+        android
+        android
+)
 
 #引入ffmpeg头文件
 include_directories(${CMAKE_SOURCE_DIR}/ffmpeg/include )
@@ -30,6 +31,9 @@ target_link_libraries(
         -Wl,--start-group
         avcodec avfilter avformat avutil swresample swscale
         -Wl,--end-group
-        ${log-lib}
+        log
+        ${android}
         z
+        OpenSLES
+        rtmp
 )

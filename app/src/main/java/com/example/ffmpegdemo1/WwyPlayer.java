@@ -12,6 +12,8 @@ public class WwyPlayer implements SurfaceHolder.Callback {
     }
 
     private OnPreparedListener onPreparedListener; // 消息告诉MainActivity
+    private OnProgressListener onProgressListener;
+    private OnErrorListener onErrorListener;
 
     private SurfaceHolder surfaceHolder; // 为了 渲染 屏幕 帧数据
 
@@ -48,9 +50,31 @@ public class WwyPlayer implements SurfaceHolder.Callback {
     }
 
     /**
+     * 获取总的播放时长
+     * @return
+     */
+    public int getDuration(){
+        return getDurationNative();
+    }
+
+    /**
+     * 播放进度跳转
+     * @param playProgress
+     */
+    public void seekTo(final int playProgress) {
+        new Thread(){
+            @Override
+            public void run() {
+                seekToNative(playProgress); // 异步线程
+            }
+        }.start();
+    }
+
+    /**
      * 资源释放
      */
     public void release() {
+        surfaceHolder.removeCallback(this);
         releaseNative();
     }
 
@@ -60,6 +84,12 @@ public class WwyPlayer implements SurfaceHolder.Callback {
     public void onPrepared() {
         if (null != onPreparedListener) {
             this.onPreparedListener.onPrepared();
+        }
+    }
+
+    public void setOnError(OnErrorListener listener){
+        if (onErrorListener != null){
+            this.onErrorListener = listener;
         }
     }
 
@@ -116,6 +146,35 @@ public class WwyPlayer implements SurfaceHolder.Callback {
         void onError(String errorText);
     }
 
+    public interface OnProgressListener {
+        void onProgress(int progress);
+    }
+
+    public interface OnErrorListener {
+        void onError(int errorCode);
+    }
+
+//    /**
+//     * 供native反射调用
+//     * 表示出错了
+//     */
+//    public void onError(int errorCode) {
+//        if (null != onErrorListener) {
+//            onErrorListener.onError(errorCode);
+//        }
+//    }
+
+    // native层传递上来的 进度值
+    public void onProgress(int progress) {
+        if (null != onProgressListener) {
+            onProgressListener.onProgress(progress);
+        }
+    }
+
+    public void setOnProgressListener(OnProgressListener onProgressListener) {
+        this.onProgressListener = onProgressListener;
+    }
+
     /**
      * 全部都是native函数
      */
@@ -123,6 +182,8 @@ public class WwyPlayer implements SurfaceHolder.Callback {
     public native void startNative();
     public native void stopNative();
     public native void releaseNative();
+    private native int getDurationNative();
+    private native void seekToNative(int playProgress);
     public native String getFFmpegVersion();
     private native void setSurfaceNative(Surface surface);
 
@@ -146,6 +207,7 @@ public class WwyPlayer implements SurfaceHolder.Callback {
         // SufaceView 的 surfaceHolder Surface对象 给Native（Native好去渲染屏幕）
 //        Surface surface = surfaceHolder.getSurface();
 //        setSurfaceNative(surface);
+        setSurfaceNative(holder.getSurface());
     }
 
     @Override

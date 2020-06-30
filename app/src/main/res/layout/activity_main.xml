@@ -62,6 +62,13 @@
                     android:id="@+id/surface_view"
                     android:layout_width="match_parent"
                     android:layout_height="200dp" />
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:visibility="visible"
+                    android:layout_below="@+id/surface_view"/>
 
                 <TextView
                     android:id="@+id/sample_text"
